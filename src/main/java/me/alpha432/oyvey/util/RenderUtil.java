@@ -1,7 +1,8 @@
-package me.alpha432.oyvey.util.render;
+package me.alpha432.oyvey.util;
 
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.alpha432.oyvey.util.traits.Util;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
@@ -82,6 +83,9 @@ public class RenderUtil implements Util {
         float g = (float) (color >> 16 & 255) / 255.0F;
         float h = (float) (color >> 8 & 255) / 255.0F;
         float j = (float) (color & 255) / 255.0F;
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance()
                 .begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -90,10 +94,13 @@ public class RenderUtil implements Util {
         bufferBuilder.vertex(matrix.peek().getPositionMatrix(), x2, y1, 0.0F).color(g, h, j, f);
         bufferBuilder.vertex(matrix.peek().getPositionMatrix(), x1, y1, 0.0F).color(g, h, j, f);
 
-        Layers.getGlobalQuads().draw(bufferBuilder.end());
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        RenderSystem.disableBlend();
     }
 
     // 3d
+
+
     public static void drawBoxFilled(MatrixStack stack, Box box, Color c) {
         float minX = (float) (box.minX - mc.getEntityRenderDispatcher().camera.getPos().getX());
         float minY = (float) (box.minY - mc.getEntityRenderDispatcher().camera.getPos().getY());
@@ -102,8 +109,14 @@ public class RenderUtil implements Util {
         float maxY = (float) (box.maxY - mc.getEntityRenderDispatcher().camera.getPos().getY());
         float maxZ = (float) (box.maxZ - mc.getEntityRenderDispatcher().camera.getPos().getZ());
 
+        Tessellator tessellator = Tessellator.getInstance();
+
+        setup3D();
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
+
         BufferBuilder bufferBuilder = Tessellator.getInstance()
                 .begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+
         bufferBuilder.vertex(stack.peek().getPositionMatrix(), minX, minY, minZ).color(c.getRGB());
         bufferBuilder.vertex(stack.peek().getPositionMatrix(), maxX, minY, minZ).color(c.getRGB());
         bufferBuilder.vertex(stack.peek().getPositionMatrix(), maxX, minY, maxZ).color(c.getRGB());
@@ -134,7 +147,8 @@ public class RenderUtil implements Util {
         bufferBuilder.vertex(stack.peek().getPositionMatrix(), minX, maxY, maxZ).color(c.getRGB());
         bufferBuilder.vertex(stack.peek().getPositionMatrix(), minX, maxY, minZ).color(c.getRGB());
 
-        Layers.getGlobalQuads().draw(bufferBuilder.end());
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        clean3D();
     }
 
     public static void drawBoxFilled(MatrixStack stack, Vec3d vec, Color c) {
@@ -153,13 +167,20 @@ public class RenderUtil implements Util {
         float maxY = (float) (box.maxY - mc.getEntityRenderDispatcher().camera.getPos().getY());
         float maxZ = (float) (box.maxZ - mc.getEntityRenderDispatcher().camera.getPos().getZ());
 
+        setup3D();
+        RenderSystem.lineWidth(( float ) lineWidth);
+        RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_LINES);
+
+        RenderSystem.defaultBlendFunc();
+
         BufferBuilder bufferBuilder = Tessellator.getInstance()
-                .begin(VertexFormat.DrawMode.LINES, VertexFormats.POSITION_COLOR_NORMAL);
+                .begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
 
         VertexRendering.drawBox(stack, bufferBuilder, minX, minY, minZ, maxX, maxY, maxZ,
                 c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, c.getAlpha() / 255f);
 
-        Layers.getGlobalLines(lineWidth).draw(bufferBuilder.end());
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        clean3D();
     }
 
     public static void drawBox(MatrixStack stack, Vec3d vec, Color c, double lineWidth) {
@@ -178,4 +199,28 @@ public class RenderUtil implements Util {
         matrices.translate(pos.getX() - camera.getPos().x, pos.getY() - camera.getPos().y, pos.getZ() - camera.getPos().z);
         return matrices;
     }
+
+    public static void setup() {
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+    }
+
+    public static void setup3D() {
+        setup();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
+    }
+
+    public static void clean() {
+        RenderSystem.disableBlend();
+    }
+
+    public static void clean3D() {
+        clean();
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
+        RenderSystem.enableCull();
+    }
+
 }
