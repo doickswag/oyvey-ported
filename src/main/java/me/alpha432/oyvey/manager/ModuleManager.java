@@ -189,8 +189,7 @@ public class ModuleManager implements Jsonable, Util {
         });
     }
 
-    @Override
-    public JsonElement toJson() {
+    @Override public JsonElement toJson() {
         JsonObject object = new JsonObject();
         for (Module module : modules) {
             object.add(module.getName(), module.toJson());
@@ -198,15 +197,13 @@ public class ModuleManager implements Jsonable, Util {
         return object;
     }
 
-    @Override
-    public void fromJson(JsonElement element) {
+    @Override public void fromJson(JsonElement element) {
         for (Module module : modules) {
             module.fromJson(element.getAsJsonObject().get(module.getName()));
         }
     }
 
-    @Override
-    public String getFileName() {
+    @Override public String getFileName() {
         return "modules.json";
     }
 }

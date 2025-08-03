@@ -1,7 +1,8 @@
 package me.alpha432.oyvey.manager;
-
 import me.alpha432.oyvey.features.Feature;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.HashMap;
 

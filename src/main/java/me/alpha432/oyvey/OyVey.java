@@ -27,8 +27,7 @@ public class OyVey implements ModInitializer, ClientModInitializer {
     public static ModuleManager moduleManager;
     public static ConfigManager configManager;
 
-    @Override
-    public void onInitialize() {
+    @Override public void onInitialize() {
         eventManager = new EventManager();
         serverManager = new ServerManager();
         rotationManager = new RotationManager();
@@ -43,8 +42,7 @@ public class OyVey implements ModInitializer, ClientModInitializer {
         TextUtil.init();
     }
 
-    @Override
-    public void onInitializeClient() {
+    @Override public void onInitializeClient() {
         eventManager.init();
         moduleManager.init();
 

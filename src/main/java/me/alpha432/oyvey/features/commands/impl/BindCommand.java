@@ -10,6 +10,8 @@ import me.alpha432.oyvey.util.KeyboardUtil;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 
+import java.security.Key;
+
 public class BindCommand
         extends Command {
     private boolean listening;
@@ -29,17 +31,16 @@ public class BindCommand
         String moduleName = commands[0];
         Module module = OyVey.moduleManager.getModuleByName(moduleName);
         if (module == null) {
-            sendMessage("Unknown module '%s'!", moduleName);
+            sendMessage("Unknown module '" + module + "'!");
             return;
         }
 
-        sendMessage("{gray} Press a key.");
+        sendMessage(Formatting.GRAY + "Press a key.");
         listening = true;
         this.module = module;
     }
 
-    @Subscribe
-    private void onKey(KeyEvent event) {
+    @Subscribe private void onKey(KeyEvent event) {
         if (nullCheck() || !listening) return;
         listening = false;
         if (event.getKey() == GLFW.GLFW_KEY_ESCAPE) {
@@ -47,8 +48,7 @@ public class BindCommand
             return;
         }
 
-        String key = KeyboardUtil.getKeyName(event.getKey());
-        sendMessage("Bind for {green} %s {} set to {gray} %s", module.getName(), key);
+        sendMessage("Bind for " + Formatting.GREEN + module.getName() + Formatting.WHITE + " set to " + Formatting.GRAY + KeyboardUtil.getKeyName(event.getKey()));
         module.bind.setValue(new Bind(event.getKey()));
     }
 

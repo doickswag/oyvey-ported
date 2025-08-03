@@ -18,8 +18,7 @@ public class PositionManager
         EVENT_BUS.register(this);
     }
 
-    @Subscribe
-    public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
+    @Subscribe public void onUpdateWalkingPlayer(UpdateWalkingPlayerEvent event) {
         if (event.getStage() == Stage.POST) return;
 
         double diff = mc.player.lastY - mc.player.getY();

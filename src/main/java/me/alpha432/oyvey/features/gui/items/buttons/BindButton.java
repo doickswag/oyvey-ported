@@ -50,8 +50,7 @@ public class BindButton
         }
     }
 
-    @Override
-    public void onKeyPressed(int key) {
+    @Override public void onKeyPressed(int key) {
         if (this.isListening) {
             Bind bind = new Bind(key);
             if (key == GLFW.GLFW_KEY_DELETE
