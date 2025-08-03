@@ -1,8 +1,6 @@
 package me.alpha432.oyvey.features.gui.items;
 
 import me.alpha432.oyvey.features.Feature;
-import me.alpha432.oyvey.features.gui.Component;
-import me.alpha432.oyvey.features.gui.OyVeyGui;
 import net.minecraft.client.gui.DrawContext;
 
 import java.awt.*;
@@ -82,9 +80,5 @@ public class Item
 
     protected void drawString(String text, double x, double y, int color) {
         context.drawTextWithShadow(mc.textRenderer, text, (int) x, (int) y, color);
-    }
-
-    public boolean isHovering(int mouseX, int mouseY) {
-        return false;
     }
 }
